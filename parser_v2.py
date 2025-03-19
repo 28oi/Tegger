@@ -51,6 +51,8 @@ class TeggerBot(TelegramClient):
             print(f"Ошибка при инициализации клиента: {e}")
             raise
 
+
+    """ Conection """
     async def close_client_stream(self):
         print("cоединение закрыто")
         if self.client and self.client.is_connected():
@@ -61,6 +63,7 @@ class TeggerBot(TelegramClient):
         if not self.client:
             self.client = await self.initialize_client()
 
+    """ Engine """
     async def get_chat_user(self, chat_id : int):
         try:
             users : list[str] = []
@@ -73,8 +76,7 @@ class TeggerBot(TelegramClient):
         finally:
             pass
 
-        # Регистрация обработчиков событий
-
+    
     async def send_message(self, chat_id : int, message : str):
         try:
             print("отправка сообщения...")
@@ -83,7 +85,8 @@ class TeggerBot(TelegramClient):
         except Exception as e:
             print("Что то пошло не так ", e)
 
-    
+
+    """ Hendler """    
     async def cmd_all(self, event):
         
         try:

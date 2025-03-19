@@ -1,1 +1,1 @@
-web: python parser_v2.py
+web: uvicorn server:app --host 0.0.0.0 --port $PORT
