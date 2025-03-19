@@ -12,7 +12,7 @@ API_HASH = os.getenv("API_HASH")
 BOT_TOKEN = os.getenv("TOKEN_BOT")
 
 
-class ParserV2(TelegramClient):
+class TeggerBot(TelegramClient):
     def __init__(
         self, 
         session: str = "Bot_session", 
@@ -52,30 +52,16 @@ class ParserV2(TelegramClient):
             raise
 
     async def close_client_stream(self):
+        print("cоединение закрыто")
         if self.client and self.client.is_connected():
             await self.client.disconnect()
 
     async def open_client_stream(self):
-        """Открывает соединение с Telegram API и регистрирует обработчики"""
+        print("cоединение открыто")
         if not self.client:
             self.client = await self.initialize_client()
 
-        # Регистрация обработчиков событий
-        @self.client.on(events.NewMessage(pattern=r"#all"))
-        async def handle_new_message(event):
-            """Обработчик новых сообщений"""
-            try:
-                sender = await event.get_sender()
-                chat = await event.get_chat()
-                users = await self.get_chat_user(chat_id=chat.id)
-                message = " ".join(users)
-                await event.respond(message)
-            except Exception as e:
-                print(e)
-
-
     async def get_chat_user(self, chat_id : int):
-        """Получает список участников чата по ссылке"""
         try:
             users : list[str] = []
             chat = await self.client.get_entity(chat_id)
@@ -87,19 +73,31 @@ class ParserV2(TelegramClient):
         finally:
             pass
 
-    async def get_chat_admin(self, chat_id : int):
-        pass
+        # Регистрация обработчиков событий
 
-# Запуск асинхронной функции
-if __name__ == "__main__":
-    p = ParserV2()
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(p.open_client_stream())
-    try:
-        print("Обработка событий...")
-        loop.run_forever()
-    except KeyboardInterrupt:
-        print("Прерывание работы")
-    finally:
-        print("Завершение работы")
-        loop.run_until_complete(p.close_client_stream())
+    async def send_message(self, chat_id : int, message : str):
+        try:
+            print("отправка сообщения...")
+            await self.client.send_message(entity=chat_id, message=message)
+            print("доставлено!")
+        except Exception as e:
+            print("Что то пошло не так ", e)
+
+    
+    async def cmd_all(self, event):
+        
+        try:
+            sender = await event.get_sender()
+            chat = await event.get_chat()
+            print("Получаем пользователей...")
+            users = await self.get_chat_user(chat_id=chat.id)
+            print("Успешно")
+            message = " ".join(users)
+            print("Отправляем батч...")
+            await event.respond(message)
+            print("Успешно")
+        except Exception as e:
+            print(e)
+
+
+bot = TeggerBot()
