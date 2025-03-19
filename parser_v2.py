@@ -1,6 +1,8 @@
 import os
 import asyncio
+import requests
 from telethon import TelegramClient, events
+from telethon.tl.types import UpdateNewMessage, PeerUser, Message, PeerChannel
 from dotenv import load_dotenv
  
 
@@ -10,12 +12,15 @@ load_dotenv()
 API_ID = os.getenv("API_ID")
 API_HASH = os.getenv("API_HASH")
 BOT_TOKEN = os.getenv("TOKEN_BOT")
+WEBHOOK_TUNNEL_URL = os.getenv("WEBHOOK_TUNNEL_URL")
+WEBHOOK_PATH = f"/bot/{BOT_TOKEN}"
+WEBHOOK_URL = f"{WEBHOOK_TUNNEL_URL}{WEBHOOK_PATH}"
 
 
 class TeggerBot(TelegramClient):
     def __init__(
         self, 
-        session: str = "Bot_session", 
+        session: str = "bot_session", 
         api_id: str = API_ID,
         api_hash: str = API_HASH,
         system_version: str = "4.16.30-vxCUSTOM",
@@ -27,6 +32,11 @@ class TeggerBot(TelegramClient):
         self._system_version = system_version
         self.bot_token = bot_token
         self._client = None
+        super().__init__(
+            session=self._session,
+            api_id=self._api_id,
+            api_hash=self._api_hash,
+            system_version=self._system_version)
 
     @property
     def client(self) -> TelegramClient | None:
@@ -36,16 +46,30 @@ class TeggerBot(TelegramClient):
     def client(self, set_value: TelegramClient) -> None:
         self._client = set_value
 
-    async def initialize_client(self) -> TelegramClient:
-        """Инициализирует клиент"""
-        try:
-            client = TelegramClient(
-                session=self._session,
-                api_id=self._api_id,
-                api_hash=self._api_hash,
-                system_version=self._system_version,
+    @staticmethod
+    def create_update_from_data(data: dict):
+        if "message" in data:
+            message_data = data["message"]
+            chat_id = message_data["chat"]["id"]
+            text = message_data.get("text", "")
+            peer = PeerUser(chat_id) if message_data["chat"]["type"] == "private" else PeerChannel(chat_id)
+            message = Message(
+                id=message_data["message_id"],
+                peer_id=peer,
+                date=None,
+                message=text,
+                out=False,
+                media=None
             )
-            await client.start(bot_token=self.bot_token)
+            print(message)
+            return UpdateNewMessage(message=message, pts=None, pts_count=None)
+        else:
+            raise ValueError("Invalid update data")
+
+
+    async def initialize_client(self) -> TelegramClient:
+        try:
+            client = await self.start(bot_token=self.bot_token)
             return client
         except Exception as e:
             print(f"Ошибка при инициализации клиента: {e}")
@@ -63,6 +87,29 @@ class TeggerBot(TelegramClient):
         if not self.client:
             self.client = await self.initialize_client()
 
+    async def setup_webhook(self, url : str):
+        try:
+            response = requests.post(f"https://api.telegram.org/bot{self.bot_token}/setWebhook", json={"url": url} )
+            if response.status_code == 200 and response.json().get("ok"):
+                print(f"Веб-хук успешно установлен: {url}")
+            else:
+                print(f"Ошибка при установке веб-хука: {response.text}")
+        except Exception as e:
+            print(f"Ошибка при установке веб хука: {e}")
+
+    async def delete_webhook(self):
+        try:
+            response = requests.post(
+                f"https://api.telegram.org/bot{self.bot_token}/deleteWebhook"
+            )
+            if response.status_code == 200 and response.json().get("ok"):
+                print("Веб-хук удален.")
+            else:
+                print(f"Ошибка при удалении веб-хука: {response.text}")
+        except Exception as e:
+            print(f"Ошибка при отправке запроса: {e}")
+
+
     """ Engine """
     async def get_chat_user(self, chat_id : int):
         try:
@@ -75,32 +122,6 @@ class TeggerBot(TelegramClient):
             return users
         finally:
             pass
-
-    
-    async def send_message(self, chat_id : int, message : str):
-        try:
-            print("отправка сообщения...")
-            await self.client.send_message(entity=chat_id, message=message)
-            print("доставлено!")
-        except Exception as e:
-            print("Что то пошло не так ", e)
-
-
-    """ Hendler """    
-    async def cmd_all(self, event):
-        
-        try:
-            sender = await event.get_sender()
-            chat = await event.get_chat()
-            print("Получаем пользователей...")
-            users = await self.get_chat_user(chat_id=chat.id)
-            print("Успешно")
-            message = " ".join(users)
-            print("Отправляем батч...")
-            await event.respond(message)
-            print("Успешно")
-        except Exception as e:
-            print(e)
 
 
 bot = TeggerBot()
