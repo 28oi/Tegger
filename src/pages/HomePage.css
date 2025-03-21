@@ -1,0 +1,198 @@
+/* Общие стили */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #1c1c1c, #3a3a3a); /* Чёрно-белый градиент */
+    color: white;
+    line-height: 1.6;
+    font-size: 1rem;
+    min-height: 100vh; /* Фон растягивается на всю высоту */
+  }
+  
+  /* Шапка */
+  header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(45deg, #4c6ef5, #2a9d8f); /* Градиент и фоновое изображение */
+    background-size: cover; /* Фон занимает весь контейнер */
+    background-position: center;
+    color: white;
+    padding: 1rem;
+    z-index: 100;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+  }
+  
+  .menu-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .menu-logo h1 {
+    font-size: 2.5rem;
+    margin: 0;
+    color: #ffffff;
+    letter-spacing: 2px;
+  }
+  
+  .dropdown {
+    position: relative;
+  }
+  
+  .dropbtn {
+    background-color: #264653;
+    color: white;
+    padding: 0.8rem 2rem;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.3s, transform 0.2s ease-in-out;
+  }
+  
+  .dropbtn:hover {
+    background-color: #e9c46a;
+    color: #264653;
+    transform: scale(1.05);
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #264653;
+    min-width: 15rem;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-radius: 0.5rem;
+    right: 0;
+    top: 100%;
+  }
+  
+  .dropdown-content a {
+    color: white;
+    padding: 1rem 2rem;
+    text-decoration: none;
+    display: block;
+    font-size: 1rem;
+  }
+  
+  .dropdown-content a:hover {
+    background-color: #e9c46a;
+    color: #264653;
+  }
+  
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  
+  /* Основной контейнер страницы */
+  .home-page {
+    max-width: 90%;
+    margin: 0 auto;
+    padding: 2rem;
+    padding-top: 8rem; /* Отступ сверху для фиксированного меню */
+  }
+  
+  /* Блоки с контентом */
+  .block {
+    background: linear-gradient(135deg, #f5f5f5, #ddd); /* Лёгкий градиент для блоков */
+    border-radius: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    transition: background-color 0.3s, transform 0.3s;
+  }
+  
+  .block:hover {
+    background-color: #000000;
+    color: white;
+    transform: scale(1.05);
+    cursor: pointer;
+  }
+  
+  /* Таймер */
+  #timer p {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    background-color: #000000;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    color: white;
+  }
+  
+  /* Подвал */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    background-color: #333;
+    color: white;
+    border-radius: 1rem;
+    margin-top: 4rem;
+  }
+  
+  footer p {
+    font-size: 1rem;
+  }
+  
+  /* Медиа-запросы для мобильных устройств */
+  @media (max-width: 768px) {
+    header {
+      padding: 1rem;
+      flex-direction: column;
+      text-align: center;
+    }
+  
+    .menu-logo h1 {
+      font-size: 2rem;
+    }
+  
+    .dropdown-content {
+      min-width: 18rem;
+      right: 0;
+      top: 100%;
+    }
+  
+    .dropbtn {
+      font-size: 1rem;
+      padding: 0.8rem 1.8rem;
+    }
+  
+    .block h3 {
+      font-size: 1.6rem;
+    }
+  
+    footer p {
+      font-size: 0.9rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    header {
+      padding: 1rem;
+    }
+  
+    .menu-logo h1 {
+      font-size: 1.5rem;
+    }
+  
+    .dropbtn {
+      font-size: 1rem;
+      padding: 0.6rem 1.5rem;
+    }
+  
+    .block h3 {
+      font-size: 1.4rem;
+    }
+  
+    footer p {
+      font-size: 0.8rem;
+    }
+  }
+  
